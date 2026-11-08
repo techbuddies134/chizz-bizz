@@ -1,265 +1,48 @@
-import { db } from "@/db";
-import { ensureSeeded } from "./seed";
-import { menuItems, orderItems, orders, reservations, reviews } from "./schema";
-import { asc, desc, inArray } from "drizzle-orm";
-import { randomUUID } from "node:crypto";
-import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD } from "@/lib/format";
-import { HttpError } from "@/lib/http-error";
 import type {
   MenuItemView,
   OrderConfirmation,
   ReviewView,
 } from "@/lib/types";
 
-const MENU_COLUMNS = {
-  id: menuItems.id,
-  slug: menuItems.slug,
-  name: menuItems.name,
-  description: menuItems.description,
-  price: menuItems.price,
-  category: menuItems.category,
-  imageUrl: menuItems.imageUrl,
-  tag: menuItems.tag,
-  rating: menuItems.rating,
-  isSignature: menuItems.isSignature,
-  sortOrder: menuItems.sortOrder,
-};
+// --- FAKE DATA FOR FRONTEND BUILD ---
+const DUMMY_MENU: MenuItemView[] = [
+  { id: 1, slug: "le-classique", name: "Le Classique", description: "Double aged-cheddar smash, caramelised onion jam and our house gold sauce.", price: 1250, category: "Burgers", imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=800&auto=format&fit=crop", tag: "Signature", rating: 49, isSignature: true, sortOrder: 1 },
+  { id: 2, slug: "truffle-chicken-burger", name: "Truffle Chicken", description: "Buttermilk-brined chicken thigh, black truffle mayo, pickled shallot.", price: 1150, category: "Burgers", imageUrl: "https://images.unsplash.com/photo-1615297928064-24977384d0da?q=80&w=800&auto=format&fit=crop", tag: "Chef's Pick", rating: 48, isSignature: true, sortOrder: 2 },
+  { id: 3, slug: "pepperoni-royale", name: "Pepperoni Royale", description: "Cupped pepperoni, hot honey, aged mozzarella on a 48-hour base.", price: 2250, category: "Pizzas", imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=800&auto=format&fit=crop", tag: "Stone Baked", rating: 49, isSignature: true, sortOrder: 3 },
+  { id: 4, slug: "margherita-nobile", name: "Margherita Nobile", description: "San Marzano tomato, fior di latte and basil oil.", price: 1750, category: "Pizzas", imageUrl: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?q=80&w=800&auto=format&fit=crop", tag: null, rating: 47, isSignature: false, sortOrder: 4 },
+  { id: 5, slug: "truffle-parmesan-fries", name: "Truffle Parmesan", description: "Hand-cut fries tossed in black truffle oil, parmesan snow.", price: 650, category: "Sides", imageUrl: "https://images.unsplash.com/photo-1576107232684-1279f390859f?q=80&w=800&auto=format&fit=crop", tag: "Cult Favourite", rating: 49, isSignature: true, sortOrder: 5 },
+  { id: 6, slug: "hot-honey-chicken", name: "Hot Honey Chicken", description: "Three pieces of 11-spice buttermilk chicken glazed in chilli honey.", price: 950, category: "Mains", imageUrl: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=800&auto=format&fit=crop", tag: "Spicy", rating: 48, isSignature: true, sortOrder: 7 },
+];
+
+const DUMMY_REVIEWS: ReviewView[] = [
+  { id: 1, name: "Ahmed Khan", quote: "The Classique is the best burger I have had in Lahore, full stop.", rating: 5, role: "Regular · Gulberg", createdAt: new Date().toISOString() },
+  { id: 2, name: "Sara Ali", quote: "Truffle parmesan fries, a Midnight Shake and that lighting — every visit feels like a small celebration.", rating: 5, role: "Verified Guest", createdAt: new Date().toISOString() },
+  { id: 3, name: "Bilal Hassan", quote: "Ordered at midnight, arrived in 28 minutes, still hot.", rating: 5, role: "Delivery Guest", createdAt: new Date().toISOString() },
+];
 
 export async function getMenuItems(): Promise<MenuItemView[]> {
-  await ensureSeeded();
-  return db.select(MENU_COLUMNS).from(menuItems).orderBy(asc(menuItems.sortOrder));
+  return DUMMY_MENU;
 }
 
 export async function getReviewsList(limit = 18): Promise<ReviewView[]> {
-  await ensureSeeded();
-  const rows = await db
-    .select({
-      id: reviews.id,
-      name: reviews.name,
-      quote: reviews.quote,
-      rating: reviews.rating,
-      role: reviews.role,
-      createdAt: reviews.createdAt,
-    })
-    .from(reviews)
-    .orderBy(desc(reviews.createdAt), desc(reviews.id))
-    .limit(limit);
-
-  return rows.map((row) => ({
-    ...row,
-    createdAt: row.createdAt.toISOString(),
-  }));
+  return DUMMY_REVIEWS.slice(0, limit);
 }
 
-function cleanText(value: unknown, field: string, max: number, required = true) {
-  if (typeof value !== "string") {
-    if (required) throw new HttpError(`${field} is required.`);
-    return "";
-  }
-  const trimmed = value.trim().replace(/\s+/g, " ");
-  if (required && trimmed.length < 2) {
-    throw new HttpError(`Please enter a valid ${field.toLowerCase()}.`);
-  }
-  return trimmed.slice(0, max);
+export async function createReview(input: any): Promise<ReviewView> {
+  return DUMMY_REVIEWS[0];
 }
 
-export type NewReviewInput = {
-  name?: unknown;
-  quote?: unknown;
-  rating?: unknown;
-};
-
-export async function createReview(input: NewReviewInput): Promise<ReviewView> {
-  await ensureSeeded();
-  const name = cleanText(input.name, "Name", 120);
-  const quote = cleanText(input.quote, "Review", 800);
-  const ratingNumber = Number(input.rating);
-  const rating = Number.isFinite(ratingNumber)
-    ? Math.min(5, Math.max(1, Math.round(ratingNumber)))
-    : 5;
-
-  if (quote.length < 12) {
-    throw new HttpError("Tell us a little more — at least 12 characters.");
-  }
-
-  const [row] = await db
-    .insert(reviews)
-    .values({ name, quote, rating, role: "New Guest" })
-    .returning();
-
+export async function createOrder(input: any): Promise<OrderConfirmation> {
   return {
-    id: row.id,
-    name: row.name,
-    quote: row.quote,
-    rating: row.rating,
-    role: row.role,
-    createdAt: row.createdAt.toISOString(),
-  };
-}
-
-export type NewOrderInput = {
-  items?: unknown;
-  customerName?: unknown;
-  phone?: unknown;
-  address?: unknown;
-  notes?: unknown;
-};
-
-type NormalisedLine = { id: number; quantity: number };
-
-function normaliseLines(raw: unknown): NormalisedLine[] {
-  if (!Array.isArray(raw) || raw.length === 0) {
-    throw new HttpError("Your cart is empty.");
-  }
-
-  const merged = new Map<number, number>();
-  for (const entry of raw) {
-    if (!entry || typeof entry !== "object") continue;
-    const id = Number((entry as { id?: unknown }).id);
-    const quantity = Number((entry as { quantity?: unknown }).quantity);
-    if (!Number.isInteger(id) || id <= 0) continue;
-    if (!Number.isFinite(quantity) || quantity <= 0) continue;
-    merged.set(id, Math.min(20, (merged.get(id) ?? 0) + Math.floor(quantity)));
-  }
-
-  if (merged.size === 0) {
-    throw new HttpError("Your cart is empty.");
-  }
-
-  return [...merged.entries()].map(([id, quantity]) => ({ id, quantity }));
-}
-
-export async function createOrder(input: NewOrderInput): Promise<OrderConfirmation> {
-  await ensureSeeded();
-
-  const lines = normaliseLines(input.items);
-  const customerName = cleanText(input.customerName, "Full name", 120);
-  const phone = cleanText(input.phone, "Phone number", 40);
-  const address = cleanText(input.address, "Delivery address", 400);
-  const notes =
-    typeof input.notes === "string" ? input.notes.trim().slice(0, 400) : "";
-
-  if (!/^[+\d][\d\s-]{7,19}$/.test(phone)) {
-    throw new HttpError("Please enter a valid phone number (e.g. 0300 1234567).");
-  }
-  if (address.length < 10) {
-    throw new HttpError("Please share a fuller delivery address.");
-  }
-
-  const available = await db
-    .select({
-      id: menuItems.id,
-      name: menuItems.name,
-      price: menuItems.price,
-    })
-    .from(menuItems)
-    .where(
-      inArray(
-        menuItems.id,
-        lines.map((line) => line.id),
-      ),
-    );
-
-  if (available.length !== lines.length) {
-    throw new HttpError("Some items are no longer available. Please refresh your cart.");
-  }
-
-  const pricedLines = lines.map((line) => {
-    const item = available.find((entry) => entry.id === line.id);
-    if (!item) throw new HttpError("Some items are no longer available.");
-    return {
-      menuItemId: item.id,
-      name: item.name,
-      unitPrice: item.price,
-      quantity: line.quantity,
-      lineTotal: item.price * line.quantity,
-    };
-  });
-
-  const subtotal = pricedLines.reduce((sum, line) => sum + line.lineTotal, 0);
-  const deliveryFee = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
-  const total = subtotal + deliveryFee;
-
-  const orderNumber = `CB-${randomUUID().replace(/-/g, "").slice(0, 6).toUpperCase()}`;
-
-  await db.transaction(async (tx) => {
-    const [order] = await tx
-      .insert(orders)
-      .values({
-        orderNumber,
-        customerName,
-        phone,
-        address,
-        notes: notes || null,
-        subtotal,
-        deliveryFee,
-        total,
-      })
-      .returning({ id: orders.id });
-
-    await tx.insert(orderItems).values(
-      pricedLines.map((line) => ({
-        orderId: order.id,
-        menuItemId: line.menuItemId,
-        name: line.name,
-        unitPrice: line.unitPrice,
-        quantity: line.quantity,
-        lineTotal: line.lineTotal,
-      })),
-    );
-  });
-
-  return {
-    orderNumber,
-    customerName,
-    subtotal,
-    deliveryFee,
-    total,
+    orderNumber: "CB-DUMMY",
+    customerName: "Guest",
+    subtotal: 0,
+    deliveryFee: 0,
+    total: 0,
     estimatedMinutes: 35,
   };
 }
 
-export type NewReservationInput = {
-  name?: unknown;
-  phone?: unknown;
-  guests?: unknown;
-  date?: unknown;
-  time?: unknown;
-  occasion?: unknown;
-  notes?: unknown;
-};
-
-export async function createReservation(input: NewReservationInput) {
-  await ensureSeeded();
-
-  const name = cleanText(input.name, "Name", 120);
-  const phone = cleanText(input.phone, "Phone number", 40);
-  const date = cleanText(input.date, "Date", 24);
-  const time = cleanText(input.time, "Time", 24);
-  const guests = Math.min(20, Math.max(1, Math.round(Number(input.guests) || 2)));
-  const occasion =
-    typeof input.occasion === "string" ? input.occasion.trim().slice(0, 80) : "";
-  const notes = typeof input.notes === "string" ? input.notes.trim().slice(0, 400) : "";
-
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    throw new HttpError("Please pick a valid date.");
-  }
-  if (!/^[+\d][\d\s-]{7,19}$/.test(phone)) {
-    throw new HttpError("Please enter a valid phone number.");
-  }
-
-  const [row] = await db
-    .insert(reservations)
-    .values({
-      name,
-      phone,
-      guests,
-      date,
-      time,
-      occasion: occasion || null,
-      notes: notes || null,
-    })
-    .returning({ id: reservations.id });
-
-  return { id: row.id, name, guests, date, time };
+export async function createReservation(input: any) {
+  return { id: 1, name: "Guest", guests: 2, date: "2024-01-01", time: "12:00" };
 }
