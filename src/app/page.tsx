@@ -15,6 +15,7 @@ import {
   MobileOrderBar,
 } from "@/components/cart-drawer";
 import { site } from "@/lib/site";
+import type { ReviewView } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -94,7 +95,7 @@ export default async function HomePage() {
     },
   ];
 
-  const reviews = [
+  const reviews: ReviewView[] = [
     {
       id: 1,
       name: "Ali",

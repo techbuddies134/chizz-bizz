@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -15,6 +16,10 @@ type MenuItem = {
   category: string;
   imageUrl: string;
   tag?: string | null;
+  slug?: string;
+  rating?: number;
+  isSignature?: boolean;
+  sortOrder?: number;
 };
 
 export function MenuSection({ items }: { items: MenuItem[] }) {
@@ -29,7 +34,8 @@ export function MenuSection({ items }: { items: MenuItem[] }) {
             eyebrow="The Menu"
             title={
               <>
-                Curated for <span className="italic text-gold-gradient">the bold.</span>
+                Curated for{" "}
+                <span className="italic text-gold-gradient">the bold.</span>
               </>
             }
             subtitle="Each dish is a study in texture and temperature. Add your favourites to the cart and taste the runway."
@@ -53,14 +59,15 @@ export function MenuSection({ items }: { items: MenuItem[] }) {
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover opacity-80 transition-transform duration-700 ease-out group-hover:scale-105 group-hover:opacity-100"
                   />
+
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0d0b08] via-black/20 to-transparent" />
-                  
+
                   {item.tag && (
                     <span className="absolute left-4 top-4 rounded-full bg-gold px-3 py-1 text-[9px] font-bold uppercase tracking-widest text-ink shadow-md">
                       {item.tag}
                     </span>
                   )}
-                  
+
                   <span className="absolute bottom-4 right-4 rounded-full bg-black/60 px-3 py-1.5 text-xs font-bold text-gold backdrop-blur border border-gold/20">
                     {formatPKR(item.price)}
                   </span>
@@ -72,13 +79,16 @@ export function MenuSection({ items }: { items: MenuItem[] }) {
                       {item.name}
                     </h3>
                   </div>
+
                   <p className="mb-4 text-xs leading-relaxed text-mist/70 line-clamp-2">
                     {item.description}
                   </p>
+
                   <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-4">
                     <span className="text-[9px] uppercase tracking-[0.2em] text-mist/50">
                       {item.category}
                     </span>
+
                     <button
                       onClick={() => addItem(item.id)}
                       className="flex h-8 w-8 items-center justify-center rounded-full bg-gold text-ink transition-all hover:bg-white hover:scale-110 active:scale-95"
