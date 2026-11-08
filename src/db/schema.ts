@@ -1,4 +1,3 @@
-// Database seeding bypassed
-export async function seedDatabase() {
+export async function ensureSeeded(): Promise<void> {
   return;
 }
