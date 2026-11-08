@@ -1,6 +1,4 @@
 // Database seeding bypassed for frontend deployment
-// Taake Vercel par bina database ke build ho sake
-
 export async function seedDatabase() {
   console.log("Database seeding skipped for deployment.");
   return;
