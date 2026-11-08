@@ -1,3 +1,4 @@
+
 import { CartProvider } from "@/components/cart-provider";
 import { SiteHeader } from "@/components/site-header";
 import { Hero } from "@/components/hero";
@@ -28,9 +29,30 @@ export default async function HomePage() {
   ];
 
   const reviews = [
-    { id: 1, name: "Ali", quote: "Best food in town! The smash burger is incredible.", rating: 5, role: "Customer" },
-    { id: 2, name: "Sara", quote: "Fast delivery, great taste. Highly recommended!", rating: 4, role: "Customer" },
-    { id: 3, name: "Hamza", quote: "Ambiance is great, and the pizza is a must-try.", rating: 5, role: "Customer" }
+    {
+      id: 1,
+      name: "Ali",
+      quote: "Best food in town! The smash burger is incredible.",
+      rating: 5,
+      role: "Customer",
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 2,
+      name: "Sara",
+      quote: "Fast delivery, great taste. Highly recommended!",
+      rating: 4,
+      role: "Customer",
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 3,
+      name: "Hamza",
+      quote: "Ambiance is great, and the pizza is a must-try.",
+      rating: 5,
+      role: "Customer",
+      createdAt: new Date().toISOString(),
+    },
   ];
 
   const structuredData = {
@@ -51,9 +73,9 @@ export default async function HomePage() {
 
   return (
     <CartProvider>
-      {/* Wapas Dark Theme */}
       <div className="relative min-h-screen bg-[#0a0806]">
         <div className="grain-overlay pointer-events-none fixed inset-0 z-[100] opacity-[0.035] mix-blend-soft-light" />
+
         <SiteHeader />
 
         <main>
@@ -73,7 +95,9 @@ export default async function HomePage() {
 
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
         />
       </div>
     </CartProvider>
