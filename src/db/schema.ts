@@ -1,9 +1,13 @@
-import { db } from ".";
-import { menuItems, reviews } from "./schema";
-import { sql } from "drizzle-orm";
+// Database seeding bypassed for frontend deployment
+// Taake Vercel par bina database ke build ho sake
 
-// Database band karne ke liye:
 export async function seedDatabase() {
-  console.log("Database seeding skipped for preview.");
-  return; 
+  console.log("Database seeding skipped for deployment.");
+  return;
+}
+
+// Agar aapke project mein koi aur function call ho raha hai toh usko bhi yahan add kar dein
+export async function runSeed() {
+  console.log("Database seeding skipped for deployment.");
+  return;
 }
