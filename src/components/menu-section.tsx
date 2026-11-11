@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -90,7 +89,7 @@ export function MenuSection({ items }: { items: MenuItem[] }) {
                     </span>
 
                     <button
-                      onClick={() => addItem(item.id)}
+                      onClick={() => addItem(item)}
                       className="flex h-8 w-8 items-center justify-center rounded-full bg-gold text-ink transition-all hover:bg-white hover:scale-110 active:scale-95"
                       aria-label={`Add ${item.name} to cart`}
                     >
