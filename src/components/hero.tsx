@@ -44,10 +44,59 @@ const showcaseDishes = [
     note: "Golden fried chicken · spicy dip",
     image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=800&auto=format&fit=crop",
   },
+  {
+    id: "smash-burger",
+    name: "Smash Burger",
+    label: "Popular",
+    price: 1150,
+    note: "Double beef patty · melted cheese",
+    image: "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=800&auto=format&fit=crop",
+  },
+  {
+    id: "spicy-zinger",
+    name: "Spicy Zinger",
+    label: "Hot Pick",
+    price: 950,
+    note: "Crispy chicken fillet · spicy mayo",
+    image: "https://images.unsplash.com/photo-1615297928064-24977384d0da?q=80&w=800&auto=format&fit=crop",
+  },
+  {
+    id: "loaded-fries",
+    name: "Loaded Fries",
+    label: "Must Try",
+    price: 650,
+    note: "Crispy fries · cheese · jalapeños",
+    image: "https://images.unsplash.com/photo-1585109649139-366815a0d713?q=80&w=800&auto=format&fit=crop",
+  },
+  {
+    id: "chocolate-shake",
+    name: "Chocolate Shake",
+    label: "New Arrival",
+    price: 550,
+    note: "Thick creamy chocolate milkshake",
+    image: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?q=80&w=800&auto=format&fit=crop",
+  },
+  {
+    id: "bbq-wings",
+    name: "BBQ Wings",
+    label: "Fan Favourite",
+    price: 750,
+    note: "Sticky BBQ glaze · sesame seeds",
+    image: "https://images.unsplash.com/photo-1527477396000-e27163b481c2?q=80&w=800&auto=format&fit=crop",
+  },
+  {
+    id: "cheese-burger",
+    name: "Classic Cheeseburger",
+    label: "Timeless",
+    price: 1050,
+    note: "Beef patty · American cheese · pickles",
+    image: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?q=80&w=800&auto=format&fit=crop",
+  },
 ];
 
 const COUNT = showcaseDishes.length;
-const HALF = Math.floor(COUNT / 2);
+// Even number of pictures ke liye balance fix
+const HALF = Math.floor((COUNT - 1) / 2);
 
 function wrappedOffset(index: number, active: number) {
   let offset = index - active;
@@ -87,7 +136,7 @@ export function Hero() {
     if (!isPlaying || hovered) return;
     const timer = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % COUNT);
-    }, 2000); // Yahan 5200 se 2000 (2 seconds) kar diya gaya hai
+    }, 2000); // Speed 2 seconds
     return () => clearInterval(timer);
   }, [isPlaying, hovered]);
 
