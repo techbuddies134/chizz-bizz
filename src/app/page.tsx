@@ -153,6 +153,62 @@ export default async function HomePage() {
           <GallerySection />
           <ReviewsSection initialReviews={reviews} />
           <ReserveSection />
+          
+          {/* NAYA LOCATION SECTION YAHAN ADD KIYA HAI */}
+          <section id="location" className="relative py-20 bg-[#0a0806] border-t border-white/5">
+            <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
+              <div className="text-center mb-12">
+                <h2 className="font-display text-3xl sm:text-4xl text-cream">
+                  Find <span className="italic text-gold-gradient">Us</span>
+                </h2>
+                <p className="mt-4 text-mist/70 text-sm">Come visit us at our restaurant.</p>
+              </div>
+              
+              <div className="grid lg:grid-cols-2 gap-10 items-center">
+                {/* Google Map Iframe */}
+                <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-white/10">
+                  <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3369.892529042519!2d74.3474973!3d32.3324848!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391e9d8f3b6b4b4f%3A0x6b3f3b6b4b4f6b3f!2sDaska%2C%20Punjab%2C%20Pakistan!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s" 
+                    width="100%" 
+                    height="100%" 
+                    style={{ border: 0 }} 
+                    allowFullScreen 
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  ></iframe>
+                </div>
+
+                {/* Contact Info Box */}
+                <div className="p-8 rounded-2xl border border-white/5 bg-[#0d0b08]">
+                  <h3 className="text-xl font-bold text-cream mb-6">Visit Our Restaurant</h3>
+                  <div className="space-y-4 text-mist/80">
+                    <p className="flex items-start gap-3">
+                      <span className="text-gold">📍</span>
+                      {site.address}
+                    </p>
+                    <p className="flex items-start gap-3">
+                      <span className="text-gold">📞</span>
+                      {site.phone}
+                    </p>
+                    <p className="flex items-start gap-3">
+                      <span className="text-gold">🕒</span>
+                      Open Daily: 12:00 PM - 12:00 AM
+                    </p>
+                  </div>
+                  
+                  <a 
+                    href={`https://maps.google.com/?q=${encodeURIComponent(site.address)}`}
+                    target="_blank" 
+                    className="mt-8 inline-block btn-gold text-center w-full"
+                  >
+                    Get Directions
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+          {/* LOCATION SECTION END */}
+
         </main>
 
         <SiteFooter />

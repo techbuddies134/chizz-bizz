@@ -123,14 +123,28 @@ export function SiteFooter() {
 
         <div className="flex flex-col items-center justify-between gap-4 border-t border-white/5 pb-24 pt-6 text-[9px] uppercase tracking-[0.2em] text-mist/40 sm:flex-row sm:pb-6">
           <p>© {new Date().getFullYear()} {site.name} Restaurant · All rights reserved</p>
+          
           <p className="flex items-center gap-2">
             <IconSpark className="h-2.5 w-2.5 text-gold/60" />
             Crafted with fire &amp; gold
           </p>
-          <a href="#home" className="transition-colors hover:text-gold">
-            Back to top ↑
-          </a>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+            <a 
+              href="https://portfolio-self-nine-93.vercel.app/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-gold"
+            >
+              Developed by <span className="text-gold font-semibold">Tech Buddies</span>
+            </a>
+            
+            <a href="#home" className="transition-colors hover:text-gold">
+              Back to top ↑
+            </a>
+          </div>
         </div>
+
       </div>
     </footer>
   );
