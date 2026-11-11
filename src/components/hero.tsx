@@ -87,7 +87,7 @@ export function Hero() {
     if (!isPlaying || hovered) return;
     const timer = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % COUNT);
-    }, 5200);
+    }, 2000); // Yahan 5200 se 2000 (2 seconds) kar diya gaya hai
     return () => clearInterval(timer);
   }, [isPlaying, hovered]);
 
